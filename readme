@@ -1,0 +1,46 @@
+Validation framework
+
+Session - runs validators against data, returns ValidationResult instance.
+
+Validators structure
+
+{
+  fields: {
+    [fieldName: string]: {
+      validator: (value, validationEnvs) => Promise<boolean> or throws
+      message: 'Error message'
+    }
+    //error counts if validator returns false or throws, message field string
+    //will be added as error description
+    ....
+  },
+  form:[
+    async validator(data, validationEnvs){
+      //should throw notValidationError to signal about error
+      new notValidationError(
+        'some message',
+        {
+          fields: {
+            fieldName: ['error here']
+          },
+          form: ['list', 'of', 'errors']
+        }
+      );
+      //information about errors could be more complex and general
+    },
+    ...
+  ]
+}
+
+validators = {
+  fields:{
+    name: {
+      async validator(value, validationEnvs){}, //true - ok, false - error; throw - error
+      message: 'Error' - field error message
+    },
+    ...
+  }
+  form: [
+    ()=>{} - throwing notValidationError
+  ]
+};
