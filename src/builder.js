@@ -1,14 +1,18 @@
 const objHas = (obj, name) => Object.prototype.hasOwnProperty.call(obj, name);
 
-const ValidationBuilder = (validators, getValidatorEnv) => {
+const ValidationBuilder = (validators, getValidatorEnv, formName) => {
   if (objHas(validators, 'fields')) {
     for (let fieldName in validators.fields) {
       validators.fields[fieldName] = augmentFieldsValidators(validators.fields[fieldName], getValidatorEnv);
     }
   }
-  if (objHas(validators, 'forms')) {
+  if (objHas(validators, 'forms') && typeof formName !== 'undefined') {
     for (let formName in validators.forms) {
       validators.forms[formName] = augmentFormValidators(validators.forms[formName], getValidatorEnv);
+    }
+  }else{
+    if (objHas(validators, 'form')) {
+      validators.form = augmentFormValidators(validators.form, getValidatorEnv);
     }
   }
   return validators;
