@@ -2,12 +2,26 @@ const emptyFieldsResults = (data)=>{
   return Object.keys(data).reduce((acc, curr)=>{acc[curr] = []; return acc;}, {});
 };
 
-module.exports = class ValidationResult{
+const FIELDS = ['fields', 'form'];
 
+module.exports = class ValidationResult{
+  #clean = true;
   #result;
 
   constructor(result){
     this.#result = JSON.parse(JSON.stringify(result));
+    Object.keys(this.#result).forEach((fieldName)=>{
+      if(!FIELDS.includes(fieldName)){
+        delete this.#result[fieldName];
+      }
+    });
+    this.#clean = this.#result.form.errors.length === 0;
+    const list = this.#getFieldsList();
+    for(let fieldName of list ){
+      if(this.isFieldDirty(fieldName)){
+        this.#clean = false;
+      }
+    }
   }
 
   destroy(){
@@ -15,12 +29,11 @@ module.exports = class ValidationResult{
   }
 
   get clean(){
-    return this.#result.clean;
+    return this.#clean;
   }
 
   static getDefaultResult(data){
     return {
-      clean: true,
       fields: emptyFieldsResults(data),
       form: {
         fields: emptyFieldsResults(data),
@@ -35,26 +48,30 @@ module.exports = class ValidationResult{
   }
 
   getDetailedReport(){
-    return JSON.parse(JSON.stringify(this.#result));
-  }
-
-  #getCompleteResult(){
-    const resultComplete = {
-      clean: this.#result.form.errors.length === 0,
-      fields: {},
-      form: []
-    };
-    for(let fieldName in this.#result.fields){
-      resultComplete.fields[fieldName] = this.#getCompleteResultForField(fieldName);
-      if(resultComplete.fields[fieldName].length){
-        resultComplete.clean = false;
-      }
+    if(typeof this.#result === 'object'){
+      return JSON.parse(JSON.stringify(this.#result));
+    }else{
+      return undefined;
     }
-    resultComplete.form = [...this.#result.form.errors];
-    return resultComplete;
   }
 
-  #getCompleteResultForField(fieldName){
+  isFieldDirty(fieldName){
+    if(
+      Array.isArray(this.#result.fields[fieldName])
+      && this.#result.fields[fieldName].length
+    ){
+      return true;
+    }
+    if(
+      Array.isArray(this.#result.form.fields[fieldName])
+      && this.#result.form.fields[fieldName].length
+    ){
+      return true;
+    }
+    return false;
+  }
+
+  getCompleteResultForField(fieldName){
     const fieldResult = [];
     if(Array.isArray(this.#result.fields[fieldName])){
       fieldResult.push(...this.#result.fields[fieldName]);
@@ -64,5 +81,32 @@ module.exports = class ValidationResult{
     }
     return fieldResult;
   }
+
+  #getCompleteResult(){
+    const resultComplete = {
+      clean: this.#clean,
+      fields: {},
+      form: []
+    };
+    const list = this.#getFieldsList();
+    for(let fieldName of list){
+      const errors = this.getCompleteResultForField(fieldName);
+      if(errors.length){
+        resultComplete.fields[fieldName] = errors;
+      }
+    }
+    resultComplete.form = [...this.#result.form.errors];
+    if(resultComplete.form.length === 0){
+      delete resultComplete.form;
+    }
+    return resultComplete;
+  }
+
+  #getFieldsList(){
+    const fields = Object.keys(this.#result.fields);
+    const fieldsInForm = Object.keys(this.#result.form.fields);
+    return [...new Set([...fieldsInForm, ...fields])];
+  }
+
 
 };

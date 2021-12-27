@@ -41,17 +41,9 @@ const runFieldValidators = async (fieldName, value, validators, result) => {
 };
 
 const setFieldError = (fieldName, errorMessage, result) => {
-  if (!Array.isArray(result.fields[fieldName])){
-    result.fields[fieldName] = [];
-  }
   if(!result.fields[fieldName].includes(errorMessage)){
     result.fields[fieldName].push(errorMessage);
   }
-  setDirty(result);
-};
-
-const setDirty = (result) => {
-  result.clean = false;
 };
 
 const validateForm = async ({validators, data, result}) => {
@@ -70,8 +62,8 @@ const runFormValidators = async (data, formValidators, result) => {
     }catch(e){
       if(e instanceof notValidationError){
         const formErrors = e.getFieldsErrors();
-        addFormErrors(formErrors.form, result);
-        addFormFieldsErrors(formErrors.fields, result);
+        (Array.isArray(formErrors.form)) && addFormErrors(formErrors.form, result);
+        formErrors.fields && addFormFieldsErrors(formErrors.fields, result);
       }else{
         throw e;
       }
@@ -89,7 +81,6 @@ const addFormError = (errorMessage, result) => {
   if(!result.form.errors.includes(errorMessage)){
     result.form.errors.push(errorMessage);
   }
-  setDirty(result);
 };
 
 const addFormFieldsErrors = (fieldsErrors, result)=>{
@@ -99,19 +90,13 @@ const addFormFieldsErrors = (fieldsErrors, result)=>{
 };
 
 const addFormFieldErrors = (fieldName, errorMessages, result) => {
-  if (!Array.isArray(result.form.fields[fieldName])){
-    result.form.fields[fieldName] = [...errorMessages];
-    setDirty(result);
-  }else{
-    errorMessages.forEach(error => {
-      addFormFieldError(fieldName, error, result);
-    });
-  }
+  errorMessages.forEach(error => {
+    addFormFieldError(fieldName, error, result);
+  });
 };
 
 const addFormFieldError = (fieldName, errorMessage, result) => {
   if(!result.form.fields[fieldName].includes(errorMessage)){
     result.form.fields[fieldName].push(errorMessage);
   }
-  setDirty(result);
 };

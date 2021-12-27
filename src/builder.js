@@ -1,15 +1,18 @@
-const objHas = (obj, name) => Object.prototype.hasOwnProperty.call(obj, name);
+const objHas = (obj, name) => {
+  return Object.prototype.hasOwnProperty.call(obj, name);
+};
+const {
+  augmentFieldsValidators,
+  augmentFormValidators,
+} = require('./builder.utils');
 
-const ValidationBuilder = (validators, getValidatorEnv, formName) => {
+module.exports = (validators, getValidatorEnv) => {
+  if(typeof validators === 'undefined' || validators === null){return {};}
   if (objHas(validators, 'fields')) {
-    for (let fieldName in validators.fields) {
-      validators.fields[fieldName] = augmentFieldsValidators(validators.fields[fieldName], getValidatorEnv);
-    }
+    transformFieldsValidators(validators.fields, getValidatorEnv);
   }
-  if (objHas(validators, 'forms') && typeof formName !== 'undefined') {
-    for (let formName in validators.forms) {
-      validators.forms[formName] = augmentFormValidators(validators.forms[formName], getValidatorEnv);
-    }
+  if (objHas(validators, 'forms')) {
+    transformFormsValidators(validators.forms, getValidatorEnv);
   }else{
     if (objHas(validators, 'form')) {
       validators.form = augmentFormValidators(validators.form, getValidatorEnv);
@@ -18,30 +21,18 @@ const ValidationBuilder = (validators, getValidatorEnv, formName) => {
   return validators;
 };
 
-module.exports = ValidationBuilder;
-
-const augmentFieldsValidators = (fieldValidators, getValidatorEnv) => {
-  return fieldValidators.map(field => augmentFieldValidator(field, getValidatorEnv));
-};
-
-const augmentFieldValidator = (rule, getValidatorEnv) => {
-  if (rule.validator && typeof rule.validator === 'function') {
-    const ruleValidator = rule.validator;
-    const result = {
-      ...rule
-    };
-    delete result.validator;
-    result.validator = (val) => ruleValidator(val, getValidatorEnv());
-    return result;
+const transformFieldsValidators = (fields, getValidatorEnv)=>{
+  for (let fieldName in fields) {
+    if(Array.isArray(fields[fieldName])){
+      fields[fieldName] = augmentFieldsValidators(fields[fieldName], getValidatorEnv);
+    }
   }
-  return rule;
 };
 
-const augmentFormValidators = (rules, getValidatorEnv) => {
-  return rules.map(rule => augmentFormValidator(rule, getValidatorEnv));
-};
-
-
-const augmentFormValidator = (rule, getValidatorEnv) => {
-  return (val) => rule(val, getValidatorEnv());
+const transformFormsValidators = (formsValidators, getValidatorEnv)=>{
+  for (let formName in formsValidators) {
+    if(Array.isArray(formsValidators[formName])){
+      formsValidators[formName] = augmentFormValidators(formsValidators[formName], getValidatorEnv);
+    }
+  }
 };
