@@ -1,5 +1,4 @@
 const ValidationResult = require('./result');
-const {notValidationError} = require('not-error');
 
 const executeObjectFunction = require('./common.js');
 
@@ -60,7 +59,7 @@ const runFormValidators = async (data, formValidators, result) => {
     try{
       await validator(data);
     }catch(e){
-      if(e instanceof notValidationError){
+      if(e && e.constructor && e.constructor.name === 'notValidationError'){
         const formErrors = e.getFieldsErrors();
         (Array.isArray(formErrors.form)) && addFormErrors(formErrors.form, result);
         formErrors.fields && addFormFieldsErrors(formErrors.fields, result);
