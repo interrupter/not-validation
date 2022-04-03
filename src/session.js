@@ -59,7 +59,7 @@ const runFormValidators = async (data, formValidators, result) => {
     try{
       await validator(data);
     }catch(e){
-      if(e && e.constructor && e.constructor.name === 'notValidationError'){
+      if(e && typeof e.getFieldsErrors === 'function'){
         const formErrors = e.getFieldsErrors();
         (Array.isArray(formErrors.form)) && addFormErrors(formErrors.form, result);
         formErrors.fields && addFormFieldsErrors(formErrors.fields, result);
