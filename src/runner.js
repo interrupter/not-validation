@@ -11,14 +11,13 @@ const ValidationSession = require('./session.js');
 * @returns {function} (data: object, formName: string)=>Promise<ValidationResult>
 **/
 const ValidationRunner = (validatorsLib) => {
-  return
   /**
   * Validation session runner
   * @param {object} data      object to validate
   * @param {string} formName
   * @returns {Promise}
   **/
-  (data, formName) => {
+  return (data, formName) => {
     const validators = {
       //fields specific validators
       fields: composeFieldsValidators(data, validatorsLib),
