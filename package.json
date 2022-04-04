@@ -1,6 +1,6 @@
 {
   "name": "not-validation",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "not-node validation framework",
   "main": "src/index.js",
   "scripts": {

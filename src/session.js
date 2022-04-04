@@ -95,6 +95,9 @@ const addFormFieldErrors = (fieldName, errorMessages, result) => {
 };
 
 const addFormFieldError = (fieldName, errorMessage, result) => {
+  if(!Array.isArray(result.form.fields[fieldName])){
+    result.form.fields[fieldName] = [];
+  }
   if(!result.form.fields[fieldName].includes(errorMessage)){
     result.form.fields[fieldName].push(errorMessage);
   }
