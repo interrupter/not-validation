@@ -8,31 +8,36 @@ const {
 
 module.exports = (validators, getValidatorEnv) => {
   if(typeof validators === 'undefined' || validators === null){return {};}
+  const augmented = {};
   if (objHas(validators, 'fields')) {
-    transformFieldsValidators(validators.fields, getValidatorEnv);
+    augmented.fields = transformFieldsValidators(validators.fields, getValidatorEnv);
   }
   if (objHas(validators, 'forms')) {
-    transformFormsValidators(validators.forms, getValidatorEnv);
+    augmented.forms = transformFormsValidators(validators.forms, getValidatorEnv);
   }else{
     if (objHas(validators, 'form')) {
-      validators.form = augmentFormValidators(validators.form, getValidatorEnv);
+      augmented.form = augmentFormValidators(validators.form, getValidatorEnv);
     }
   }
-  return validators;
+  return augmented;
 };
 
 const transformFieldsValidators = (fields, getValidatorEnv)=>{
+  const augmented = {};
   for (let fieldName in fields) {
     if(Array.isArray(fields[fieldName])){
-      fields[fieldName] = augmentFieldsValidators(fields[fieldName], getValidatorEnv);
+      augmented[fieldName] = augmentFieldsValidators(fields[fieldName], getValidatorEnv);
     }
   }
+  return augmented;
 };
 
 const transformFormsValidators = (formsValidators, getValidatorEnv)=>{
+  const augmented = {};
   for (let formName in formsValidators) {
     if(Array.isArray(formsValidators[formName])){
-      formsValidators[formName] = augmentFormValidators(formsValidators[formName], getValidatorEnv);
+      augmented[formName] = augmentFormValidators(formsValidators[formName], getValidatorEnv);
     }
   }
+  return augmented;
 };
