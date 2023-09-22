@@ -4,7 +4,7 @@
  * @return {boolean}     if this is a function
  **/
 const isFunc = (func) => {
-  return typeof func === 'function';
+    return typeof func === "function";
 };
 
 /**
@@ -13,15 +13,15 @@ const isFunc = (func) => {
  * @return {boolean}       if this function is constructed as AsyncFunction
  **/
 const isAsync = (func) => {
-  return func.constructor.name === 'AsyncFunction';
+    return func.constructor.name === "AsyncFunction";
 };
 
 module.exports = async (proc, params) => {
-  if (isFunc(proc)) {
-    if (isAsync(proc)) {
-      return await proc(...params);
-    } else {
-      return proc(...params);
+    if (isFunc(proc)) {
+        if (isAsync(proc)) {
+            return await proc(...params);
+        } else {
+            return proc(...params);
+        }
     }
-  }
 };
