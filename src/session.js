@@ -1,5 +1,5 @@
 const ValidationResult = require("./result");
-
+const notVaildationError = require("not-error/src/validation.error.node.js");
 const executeObjectFunction = require("./common.js");
 
 const ValidationSession = async (validators, data) => {
@@ -39,7 +39,11 @@ const runFieldValidators = async (fieldName, value, validators, result) => {
                 setFieldError(fieldName, validatorRule.message, result);
             }
         } catch (e) {
-            setFieldError(fieldName, validatorRule.message, result);
+            if (e instanceof notVaildationError || !validatorRule.message) {
+                setFieldError(fieldName, e.message, result);
+            } else {
+                setFieldError(fieldName, validatorRule.message, result);
+            }
         }
     }
 };

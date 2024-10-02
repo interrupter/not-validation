@@ -1,6 +1,6 @@
 {
   "name": "not-validation",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "not-node validation framework",
   "main": "src/index.js",
   "scripts": {
@@ -27,7 +27,6 @@
     "url": "https://github.com/interrupter/not-validation/issues"
   },
   "devDependencies": {
-    "not-error": "*",
     "chai": "^4.3.4",
     "chai-as-promised": "*",
     "eslint": "^8.4.1",
@@ -37,6 +36,7 @@
     "jsdoc": "^3.6.7",
     "mocha": "*",
     "mocha-suppress-logs": "^0.3.1",
+    "not-error": "^0.3.0",
     "not-log": "^0.0.20",
     "nyc": "^15.1.0",
     "retire": "^3.0.3"
