@@ -1,5 +1,5 @@
 const ValidationResult = require("./result");
-const notVaildationError = require("not-error/src/validation.error.node.js");
+const notVaildationError = require("not-error/src/validation.error.node.cjs");
 const executeObjectFunction = require("./common.js");
 
 const ValidationSession = async (validators, data) => {
